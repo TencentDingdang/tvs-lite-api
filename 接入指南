@@ -1,0 +1,356 @@
+
+
+# TVS-Lite API
+
+
+接入本接口，需要按照[基础API文档](https://github.com/TencentDingdang/tvs-tools/blob/master/doc/%E8%85%BE%E8%AE%AF%E5%8F%AE%E5%BD%93HTTP%E6%96%B9%E5%BC%8F%E6%8E%A5%E5%85%A5API%E6%96%87%E6%A1%A3.md#3-%E6%8E%A5%E5%8F%A3%E8%A7%84%E5%88%99)的文档，进行请求签名。
+
+语音识别、TTS接口可以参考[基础API文档](https://github.com/TencentDingdang/tvs-tools/blob/master/doc/腾讯叮当HTTP方式接入API文档.md)。本文档只介绍TVS-Lite API。
+
+##  1. 接口描述
+
+智能系统的交互需要知道终端一系列状态，为了简化终端上报与解析各个领域语义、服务数据的难度，叮当HTTP基础API特别推出event接口，本接口将终端的交互简化为事件（event)与指令(directive)两大类并对领域数据进行了解析转化为相应的directive。event是指终端的发生的事情，由终端上报，如音乐开始播放、闹钟闹铃响起、文本识别事件等。directive是后台根据event下发的相应指令，指示终端做某些事情，如设置闹钟、播放音乐等。基本directive、event、交互与TVS API一致。 见[TVS API指令与事件](https://github.com/TencentDingdang/tvs-tools/blob/master/doc/AVS兼容API接口文档.md)
+
+## 2. 请求参数
+
+URL：`POST https://aiwx.html5.qq.com/api/v2/event`
+
+body请求体：
+```json
+{
+    "baseInfo": {
+        "qua": "{{STRING}}",
+        "user": {
+            "user_id": "{{STRING}}",
+            "account":{
+                "id": "{{STRING}}",
+                "appid": "{{STRING}}",
+                "type": "{{STRING}}",
+                "token": "{{STRING}}"	
+            }
+        },
+        "lbs": {
+            "longitude": {{DOUBLE}},
+            "latitude": {{DOUBLE}}
+        },
+        "device": {
+            "serialNum":"{{STRING}}"
+        }
+    },
+    "event": {
+        "header": {
+            "namespace": "{{STRING}}",
+            "name": "{{STRING}}",
+            "messageId": "{{STRING}}"
+        },
+        "payload": {
+            
+        }
+
+     },
+     "context": [
+     ]
+}
+```
+
+
+| 参数名                        |   类型   | 是否必选 | 描述                                                         |
+| ----------------------------- | :------: | :------: | ------------------------------------------------------------ |
+| `baseInfo`                    |    -     |    是    | 基础信息                                                     |
+| `baseInfo.qua`                | `string` |    是    | 设备及应用信息，详细说明见[附录-QUA字段说明](#QUA字段说明)   |
+| `baseInfo.user`               |    -     |    否    | 用户信息                                                     |
+| `baseInfo.user.user_id`       | `string` |    -     | 用户ID，，详细说明见[附录-USERID](#USERID)                   |
+| `baseInfo.user.account`       | `object` |    -     | 用户账户信息                                                 |
+| `baseInfo.user.account.id`    | `string` |    -     | 用户账户ID，填openid                                         |
+| `baseInfo.user.account.token` | `string` |    -     | 用户账户accesstoken                                          |
+| `baseInfo.user.account.type`  | `string` |    -     | 用户账户类型,支持`WX`/`QQOPEN`                               |
+| `baseInfo.user.account.appid` | `string` |    -     | 用户账户的appid                                              |
+| `baseInfo.lbs`                |    -     |    否    | 用户位置信息                                                 |
+| `baseInfo.lbs.longitude`      | `double` |    -     | 经度                                                         |
+| `baseInfo.lbs.latitude`       | `double` |    -     | 纬度                                                         |
+| `baseInfo.device`             |    -     |    否    |                                                              |
+| `baseInfo.device.serialNum`   | `string` |    是    | 设备唯一序列号                                               |
+| `event`                       | `object` |    是    | 事件结构，事件与TVS API event一致                            |
+| `context`                     | `array`  |    否    | 上下文结构，只有某些event才需要这个结构，见[文档](https://github.com/TencentDingdang/tvs-tools/blob/master/Tvs Protocol/通用上下文.md) |
+
+
+## 3. 返回参数
+
+```json
+{
+    "status": {
+        "code": 0,
+        "msg": ""  
+    },
+    "directives": [
+    {
+        "header": {
+            "namespace": "{{STRING}}",
+            "name": "{{STRING}}",
+            "messageId": "{{STRING}}",
+            "dialogRequestId": "{{STRING}}"
+        },
+        "payload": {
+            
+        }
+    }
+    ]
+}
+```
+
+| 参数名           | 类型       | 描述                  |
+| ------------- | -------- | ------------------- |
+| `status`      | -        | 消息头                 |
+| `status.code` | -        | 状态码                 |
+| `status.msg`  | `string` | 状态信息                |
+| `directives`  | `array`  | 指令数组，指令结构与TVS API一致 |
+
+ 
+
+
+### 3.1 状态码定义
+
+
+| `status.code` | 描述                     |
+| ------------- | ---------------------- |
+| 0             | 处理正常                   |
+| 1             | 处理正常，无directives下发     |
+| 2             | 账号异常，需要重新登录。           |
+| -101          | 服务异常                   |
+| -100          | 参数错误，错误信息见`status.msg` |
+
+
+
+## 4. 与TVS API的不同
+
+本接口仅支持文本请求，文本返回。而TVS API支持完整的语音请求到TTS。
+因为，本接口不支持`SpeechSynthesizer.Speak`指令，而以`SpeechSynthesizer.SpeakText`代替。不支持`SpeechRecognizer.Recognize`事件，而以`TvsTextRecognizer.recognize`代替。
+
+ `SpeechSynthesizer.SpeakText`指令结构如下：
+
+```json
+{
+    "directive": {
+        "header": {
+            "namespace": "SpeechSynthesizer",
+            "name": "SpeakText",
+            "messageId": "{{STRING}}",
+            "dialogRequestId": "{{STRING}}"
+        },
+        "payload": {
+            "text": "{{STRING}}",
+            "token": "{{STRING}}"
+        }
+    }
+}
+```
+
+`TvsTextRecognizer.recognize`指令结构如下：
+
+```json
+{
+	"context": [...],
+	"event": {
+		"header": {
+			"namespace": "TvsTextRecognizer",
+			"name": "Recognize",
+            "messageId": "{{STRING}}",
+			"dialogRequestId": "{{STRING}}"
+		},
+		"payload": {
+            "text": "{{STRING}}"
+		}
+	}
+}	
+```
+
+
+
+注意：event.dialogRequestId要保证足够随机，建议20字节以上的随机字符串，以免会话冲突。
+
+## 5. 案例
+
+下面通过简单的案例来说明接口的用法。
+### 5.1 设备开机
+
+设备开机或者账号切换，需要重新向叮当后台同步状态。
+#### 5.1.1. 上报同步事件
+```json
+{
+    "baseInfo": {
+        "qua": "{{STRING}}",
+        "user": {
+            "user_id": "{{STRING}}",
+            "account":{
+                "id": "{{STRING}}",
+                "appid": "{{STRING}}",
+                "type": "{{STRING}}",
+                "token": "{{STRING}}"	
+            }
+        },
+        "lbs": {
+            "longitude": 22.2,
+            "latitude": 33.3
+        },
+        "ip": "12.2.3.3",
+        "device": {
+            "serial_num":"2323232"
+        }
+    },
+    "event": {
+        "header": {
+            "namespace": "System",
+            "name": "SynchronizeState",
+            "messageId": "messageid"
+        },
+        "payload": {
+        }
+     },
+     "context": [
+     	//当前上下文
+     ]
+}
+```
+
+
+### 请求音乐
+
+#### 1. 上报文本识别事件
+```json
+{
+    "baseInfo": {
+        "qua": "{{STRING}}",
+        "user": {
+            "user_id": "{{STRING}}",
+            "account":{
+                "id": "{{STRING}}",
+                "appid": "{{STRING}}",
+                "type": "{{STRING}}",
+                "token": "{{STRING}}"	
+            }
+        },
+        "lbs": {
+            "longitude": 22.2,
+            "latitude": 33.3
+        },
+        "ip": "12.2.3.3",
+        "device": {
+            "serial_num":"2323232"
+        }
+    },
+    "event": {
+		"header": {
+			"namespace": "TvsTextRecognizer",
+			"name": "Recognize",
+            "messageId": "messageId",
+			"dialogRequestId": "dialogRequestId"
+		},
+		"payload": {
+            "text": "播放音乐"
+		}
+
+     },
+     "context": [
+     	//当前上下文
+     ]
+}
+```
+#### 2. 指令返回
+```json
+{
+	"directives": [{
+		"directive": {
+			"header": {
+				"dialogRequestId": "dialogRequestId1",
+				"messageId": "SpeechSynthesizer-Speak-MessageId-20190104T185250-1843993368",
+				"name": "SpeakText",
+				"namespace": "SpeechSynthesizer"
+			},
+			"payload": {
+				"text": "推荐你听听周杰伦的歌曲。",
+				"token": "3:fm:play_radio:fm:play_radio:50_4927:0:0:1546599169703@SpeechSynthesizer-SpeakText-Token-20190104T185250-0943947739"
+			}
+		}
+	}, {
+		"directive": {
+			"header": {
+				"dialogRequestId": "dialogRequestId1",
+				"messageId": "AudioPlayer-ClearQueue-MessageId-20190104T185249-1474612399",
+				"name": "ClearQueue",
+				"namespace": "AudioPlayer"
+			},
+			"payload": {
+				"clearBehavior": "CLEAR_ENQUEUED"
+			}
+		}
+	}, {
+		"directive": {
+			"header": {
+				"messageId": "AudioPlayer-Play-MessageId-20190104T185249-2053999932",
+				"name": "Play",
+				"namespace": "AudioPlayer"
+			},
+			"payload": {
+				"audioItem": {
+					"audioItemId": "50_4927",
+					"stream": {
+						"offsetInMilliseconds": 0,
+						"progressReport": {
+							"progressReportDelayInMilliseconds": 15000,
+							"progressReportIntervalInMilliseconds": 60000
+						},
+						"token": "Audio:fm:play_radio:fm:play_radio:50_4927:0:0:1546599169965@AudioPlayer-Play-Token-20190104T185249-1411549676",
+						"url": "https://ls.qingting.fm/live/4927/24k.m3u8"
+					}
+				},
+				"playBehavior": "REPLACE_ALL",
+				"tvsExtraInformation": {
+					"domain": "music"
+				},
+				"tvsPlayerMode": "Audio"
+			}
+		}
+	}],
+	"status": {
+		"code": 0,
+		"msg": ""
+	}
+}
+```
+
+
+
+### 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
