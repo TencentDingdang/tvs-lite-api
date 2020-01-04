@@ -1,2 +1,3 @@
-# tvs-lite-api
-TVS API Lite版本
+# tvs-lite-api文档
+
+[接入指南](接入指南.md)
