@@ -1,0 +1,25 @@
+ ## SpeechSynthesizer.SpeakText指令
+ 
+ `SpeechSynthesizer.SpeakText`指令结构如下：
+
+```json
+{
+        "header": {
+            "namespace": "SpeechSynthesizer",
+            "name": "SpeakText",
+            "messageId": "{{STRING}}",
+            "dialogRequestId": "{{STRING}}"
+        },
+        "payload": {
+            "text": "{{STRING}}",
+            "token": "{{STRING}}"
+        }
+}
+```
+
+整体结构与TVS API结构一致。
+
+| 参数名           | 类型       | 描述                  |
+| ------------- | -------- | ------------------- |
+| `payload.text` | string      | 终端需要播报的文本                 |
+| `payload.token` | string        | 播报令牌                 |
