@@ -1,0 +1,188 @@
+# 推荐引导语接入
+
+
+引导语方面，需要使用https://github.com/TencentDingdang/tvs-lite-api/blob/master/%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97.md 的接口。
+
+
+## 启动拉引导语
+
+使用场景：开始交互前，引导用户可以使用哪些query。
+
+### 请求方法
+
+发送`TvsTextRecognizer.Recognize`事件，其`text`固定为`SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST`，增加`extraOperation`参数，并填入`extraOperation`。
+
+```json
+    {
+       "header": {
+    		"namespace": "TvsTextRecognizer",
+    		"name": "Recognize",
+    		"messageId": "messageId1",
+    		"dialogRequestId": "dialo33g3Rsesssdddddsdssqud3233332dessssstId122"
+    	},
+    	"payload": {
+            "text":"SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST",
+            "extraOperation":"SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST"
+        }
+    }
+```
+
+*请求示例*
+
+```json
+{
+    "baseInfo":
+    {
+        "qua": "QV=3&PL=ADR&VE=7.6&VN=0.0.0.1&PP=com.tencent.xxx",
+        "lbs":
+        {
+            "latitude":30.5434,
+            "longitude":104.068
+        },
+        "device":{
+            "serialNum":"deviceSerialNum"
+        }
+    },
+    "context":[
+        {"header":{"name":"ShowState","namespace":"TvsUserInterface"},"payload":{"isEnabled":true}}
+    ],
+    "event":
+    {
+       "header": {
+			"namespace": "TvsTextRecognizer",
+			"name": "Recognize",
+			"messageId": "messageId1",
+			"dialogRequestId": "dialo33g3Rsesssdddddsdssqud3233332dessssstId122"
+		},
+		"payload": {
+            "text":"SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST",
+            "extraOperation":"SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST"
+        }
+    }
+}
+```
+
+*返回示例*
+
+云小微返回的指令中，将会包含一个`DeviceControl.Control`指令
+
+
+
+```
+{
+	"header": {
+		"dialogRequestId": "dialo33g3Rsesssdddddsdssqud3233332dessssstId122",
+		"messageId": "DeviceControl-Control-MessageId-20200205T195004-0989775066",
+		"name": "Control",
+		"namespace": "DeviceControl"
+	},
+	"payload": {
+		"data": {
+			"jsonData": "{ \"baseInfo\": { \"skillIcon\": \"\", \"skillName\": \"\" }, \"controlInfo\": { \"audioConsole\": \"true\", \"orientation\": \"portrait\", \"textSpeak\": \"true\", \"type\": \"TEXT\", \"version\": \"1.0.0\" }, \"globalInfo\": { \"backgroundAudio\": { \"metadata\": { \"offsetInMilliseconds\": 0, \"totalMilliseconds\": 0 }, \"stream\": { \"url\": \"\" } }, \"backgroundImage\": { \"contentDescription\": \"\", \"sources\": [  ] }, \"seeMore\": \"\" }, \"listItems\": [ { \"audio\": { \"metadata\": { \"offsetInMilliseconds\": 0, \"totalMilliseconds\": 0 }, \"stream\": { \"url\": \"\" } }, \"htmlView\": \"\", \"image\": { \"contentDescription\": \"\", \"sources\": [  ] }, \"mediaId\": \"\", \"textContent\": \"为您找到以下相关问题，如没有您想咨询的问题，可以对我说：转人工\", \"title\": \"\", \"video\": { \"metadata\": { \"offsetInMilliseconds\": 0, \"totalMilliseconds\": 0 }, \"sources\": [  ] } } ], \"templateInfo\": { \"t_id\": \"\" } }"
+		},
+		"nlpInfo": {
+			"candidateSemanticList": ["{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"QA_shuiwu\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"qa_pairs\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": {  }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"个税扣除可以扣除哪一些呢？\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": false, \"skill_id\": \"1169506593550004224\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }", "{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"QA_shuiwu\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"qa_pairs\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": {  }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"个人所得税改革之后，要如何实施开展？\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": false, \"skill_id\": \"1169506593550004224\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }", "{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"QA_shuiwu\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"qa_pairs\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": {  }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"工资薪金所得与劳务报酬所得有区别吗？\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": false, \"skill_id\": \"1169506593550004224\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }", "{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"QA_shuiwu\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"qa_pairs\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": {  }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"如何查询打印个税明细申报表？\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": false, \"skill_id\": \"1169506593550004224\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }", "{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"QA_shuiwu\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"qa_pairs\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": {  }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"新个税出来之后，起征点是多少了呢？\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": false, \"skill_id\": \"1169506593550004224\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }"],
+			"domain": "chat",
+			"intent": "chat",
+			"semantic": "{ \"bubble_transform_query\": \"\", \"confidence\": -1, \"domain\": \"chat\", \"duplex_end_timestamp\": -1, \"duplex_start_timestamp\": -1, \"extra_semantic\": [  ], \"ifttt_this\": \"\", \"intent\": \"chat\", \"intent_confirm_state\": 0, \"invocation_name\": \"\", \"is_semantic_only\": false, \"mExt\": { \"can_enter_duplex\": \"false\" }, \"nlu_match_info\": { \"is_single_entity\": true, \"matched_type\": 0 }, \"query\": \"SEMANTIC_CMD_REQ_NLP_RECOMMEND_LIST\", \"query_source_type\": 1, \"query_type\": 2, \"session_complete\": true, \"skill_id\": \"990861798599168000\", \"skill_trigger_type\": 1, \"slots\": [  ], \"slots_v2\": [  ], \"type\": 0, \"voice_query\": { \"asr_results\": [  ], \"compress_type\": 1, \"pre_itn_query\": \"\", \"raw_data\": [  ], \"sample_rate\": 8000 } }",
+			"status": {
+				"code": -3,
+				"message": "为您找到以下相关问题，如没有您想咨询的问题，可以对我说：转人工"
+			}
+		}
+	}
+}
+```
+
+其中`payload.data.nlpInfo.candidateSemanticList`内是候选语义列表，每条内容都是一个引导语。每个候选语义的需要关心的字段示例如下（裁剪过，其他字段不需要关心）：
+
+```json
+{
+	"domain": "QA_shuiwu",
+	"intent": "qa_pairs",
+	"query": "个税扣除可以扣除哪一些呢？",
+    "skill_id": "1169506593550004224",
+}
+
+```
+
+也就是需要关心`domain`,`intent`,`query`,`skill_id`。下面在使用引导语进行请求时，这些字段会用到。
+
+终端可以取每个候选语义的`query`作为引导展示字段。
+
+
+## 使用引导语请求
+
+使用场景：当用户点击展示的引导语时，需要后台下发按照引导语请求的内容。
+
+
+发送`TvsSemanticRecognizer.Recognize`事件，其`resultType`固定为`SERVICE`，`semantic`参数填入引导语的语义关键字段。
+
+```json
+    {
+       "header": {
+    		"namespace": "TvsSemanticRecognizer",
+    		"name": "Recognize",
+    		"messageId": "messageId1",
+    		"dialogRequestId": "dialo33g3Rsesssdddddsdssqud3233332dessssstId122"
+    	},
+    	"payload": {
+            "semantic":"{\"query\":\"个税扣除可以扣除哪一些呢\",\"domain\":\"QA_shuiwu\",\"intent\":\"qa_pairs\",\"skill_id\":\"1169506593550004224\"}",
+            "resultType":"SERVICE"
+        }
+    }
+```
+
+`semantic`字段是json结构体的字符串类型。json结构体的结构如下：
+
+```
+{
+	"domain": "技能名",
+	"intent": "意图名称",
+	"query": "引导语",
+    "skill_id": "技能ID",
+}
+
+```
+这几个字段对应上上节候选语义的字段。
+
+
+
+*请求示例*
+
+```json
+{
+    "baseInfo":
+    {
+        "qua": "QV=3&PL=ADR&VE=7.6&VN=0.0.0.1&PP=com.tencent.xxx",
+        "lbs":
+        {
+            "latitude":30.5434,
+            "longitude":104.068
+        },
+        "device":{
+            "serialNum":"deviceSerialNum"
+        }
+    },
+    "context":[
+        {"header":{"name":"ShowState","namespace":"TvsUserInterface"},"payload":{"isEnabled":true}}
+    ],
+    "event":
+    {
+       "header": {
+			"namespace": "TvsTextRecognizer",
+			"name": "Recognize",
+			"messageId": "messageId1",
+			"dialogRequestId": "dialo33g3Rsesssdddddsdssqud3233332dessssstId122"
+		},
+		"payload": {
+            "semantic":"{\"query\":\"个税扣除可以扣除哪一些呢\",\"domain\":\"QA_shuiwu\",\"intent\":\"qa_pairs\",\"skill_id\":\"1169506593550004224\"}",
+            "resultType":"SERVICE"
+        }
+    }
+}
+```
+
+
+
+
